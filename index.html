@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>श्री शीतला धाम मंदिर — दानदाता प्रबंधन</title>
+  
+  <!-- Google Fonts: Mukta -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Mukta', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- शीर्षासन पट्टी (Header) -->
+  <div class="sheersh-patti">
+    <button id="picheJayein" class="button-wapas" style="display:none;" onclick="pannaBadle('mukhya')">
+      <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      <span>वापस</span>
+    </button>
+    <h1 id="mukhyaHeaderTitle">श्री शीतला धाम मंदिर</h1>
+    
+    <div style="display:flex; align-items:center; gap:8px;">
+      <!-- सर्वर कनेक्शन स्थिति -->
+      <span id="serverStatusBadge" class="status-indicator connected" title="Cloudflare Worker स्थिति">
+        <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:currentColor;"></span>
+        <span id="serverStatusText">ऑनलाइन</span>
+      </span>
+      <!-- सेटिंग्स बटन -->
+      <button class="btn-header-icon" onclick="openSettingsModal()" title="Worker URL सेटिंग्स">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="mukhya-dabba">
+    
+    <!-- 1. डैशबोर्ड (Dashboard) -->
+    <div id="mukhyaFalakh">
+
+      <!-- त्वरित कार्य बटन -->
+      <div class="shirsh-karya-grid">
+        <button class="btn-top-action btn-add-action" onclick="prapatraKholein('मासिक')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          <span>नया दानदाता जोड़ें</span>
+        </button>
+        <button class="btn-top-action btn-pay-action" onclick="pannaBadle('bhugtanKhand')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+          <span>भुगतान दर्ज करें</span>
+        </button>
+      </div>
+
+      <!-- दानदाता पत्रक कार्ड्स (मासिक, वार्षिक, नवीन, कुल सारांश) -->
+      <div class="falakh-grid">
+        
+        <!-- 1. मासिक दानदाता -->
+        <div class="patrak masik-rang" onclick="pravishtiKhandKholein('मासिक')">
+          <div class="patrak-sheershak">
+            <span style="color:#059669; font-weight:800;">मासिक दानदाता</span>
+            <span id="masikCountBadge" style="font-size:11px; background:#d1fae5; color:#065f46; padding:1px 6px; border-radius:10px;">-</span>
+          </div>
+          <div class="patrak-rakam" id="masikPraptDisplay" style="color:#059669;">
+            <span class="skeleton-box" style="width: 75px; height: 26px;"></span>
+          </div>
+          <div class="patrak-vibhajan" id="masikSubKosh">
+            <div class="stat-row"><span>नियत राशि:</span> <span class="skeleton-box" style="width: 50px; height: 13px;"></span></div>
+            <div class="stat-row"><span>बकाया राशि:</span> <span class="skeleton-box" style="width: 50px; height: 13px;"></span></div>
+          </div>
+        </div>
+
+        <!-- 2. वार्षिक दानदाता -->
+        <div class="patrak varshik-rang" onclick="pravishtiKhandKholein('वार्षिक')">
+          <div class="patrak-sheershak">
+            <span style="color:#1d4ed8; font-weight:800;">वार्षिक दानदाता</span>
+            <span id="varshikCountBadge" style="font-size:11px; background:#dbeafe; color:#1e40af; padding:1px 6px; border-radius:10px;">-</span>
+          </div>
+          <div class="patrak-rakam" id="varshikPraptDisplay" style="color:#1d4ed8;">
+            <span class="skeleton-box" style="width: 75px; height: 26px;"></span>
+          </div>
+          <div class="patrak-vibhajan" id="varshikSubKosh">
+            <div class="stat-row"><span>नियत राशि:</span> <span class="skeleton-box" style="width: 50px; height: 13px;"></span></div>
+            <div class="stat-row"><span>बकाया राशि:</span> <span class="skeleton-box" style="width: 50px; height: 13px;"></span></div>
+          </div>
+        </div>
+
+        <!-- 3. नवीन दानदाता -->
+        <div class="patrak naveen-rang" onclick="pravishtiKhandKholein('नवीन')">
+          <div class="patrak-sheershak">
+            <span style="color:#d97706; font-weight:800;">नवीन दानदाता</span>
+            <span id="naveenCountBadge" style="font-size:11px; background:#fef3c7; color:#92400e; padding:1px 6px; border-radius:10px;">-</span>
+          </div>
+          <div class="patrak-rakam" id="naveenPraptDisplay" style="color:#d97706;">
+            <span class="skeleton-box" style="width: 75px; height: 26px;"></span>
+          </div>
+          <div class="patrak-vibhajan" id="naveenSubKosh">
+            <div class="stat-row"><span>नियत राशि:</span> <span class="skeleton-box" style="width: 50px; height: 13px;"></span></div>
+            <div class="stat-row"><span>बकाया राशि:</span> <span class="skeleton-box" style="width: 50px; height: 13px;"></span></div>
+          </div>
+        </div>
+
+        <!-- 4. कुल प्राप्त दान (समस्त दानदाता) -->
+        <div class="patrak patrak-purna" onclick="pravishtiKhandKholein('समस्त')">
+          <div class="patrak-sheershak">
+            <span style="color:#0f172a; font-weight:800; font-size:14px;">समस्त दानदाता (कुल सारांश)</span>
+            <span id="grandCountBadge" style="font-size:11.5px; background:#e2e8f0; color:#0f172a; padding:2px 8px; border-radius:10px; font-weight:bold;">-</span>
+          </div>
+          <div class="patrak-rakam" id="grandPraptDisplay" style="color:#059669;">
+            <span class="skeleton-box" style="width: 130px; height: 32px;"></span>
+          </div>
+          <div class="patrak-vibhajan" id="grandSubKosh">
+            <div class="stat-row"><span>कुल नियत धनराशि:</span> <strong id="grandNiyatVal" style="color:#2563eb;"><span class="skeleton-box" style="width: 60px; height: 14px;"></span></strong></div>
+            <div class="stat-row"><span>कुल बकाया धनराशि:</span> <strong id="grandBakayaVal" style="color:#dc2626;"><span class="skeleton-box" style="width: 60px; height: 14px;"></span></strong></div>
+            <div class="stat-row" style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:4px;">
+              <span>नकद: <strong id="grandNakadVal">-</strong></span>
+              <span>ऑनलाइन: <strong id="grandOnlineVal">-</strong></span>
+              <span>रसीद: <strong id="grandRaseedVal">-</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- विवरण पत्रिका डाउनलोड / प्रिंट बटन -->
+      <button class="btn-patrika-download" onclick="vivaranPatrikaDownload()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+        <span>दानदाता विवरण पत्रिका (लेखा-जोखा) प्रिंट / PDF प्राप्त करें</span>
+      </button>
+    </div>
+
+    <!-- 2. विशेष नया सेक्शन: भुगतान दर्ज करें खंड (Payment Management Section) -->
+    <div id="bhugtanKhand" style="display:none;">
+      <div style="background:#ffffff; border-radius:14px; padding:12px; margin-bottom:12px; border:1px solid var(--border-color); box-shadow:0 2px 6px rgba(15,23,42,0.04);">
+        <div style="font-weight:800; font-size:16px; color:#0f172a; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+          <span>भुगतान दर्ज करें</span>
+          <span style="font-size:12px; font-weight:600; color:#64748b;">दानदाता कार्ड पर क्लिक करके भुगतान भरें</span>
+        </div>
+
+        <!-- 4 उप-टैब (Sub-Tabs for Payment Section) -->
+        <div class="sthir-patti" style="margin-bottom:10px; position:relative; top:0; z-index:1;">
+          <div class="khand-samuh">
+            <button id="paySubTabSamast" class="khand-button sakriya" onclick="setPaySubCategory('समस्त')">समस्त दानदाता</button>
+            <button id="paySubTabMasik" class="khand-button" onclick="setPaySubCategory('मासिक')">मासिक</button>
+            <button id="paySubTabVarshik" class="khand-button" onclick="setPaySubCategory('वार्षिक')">वार्षिक</button>
+            <button id="paySubTabNaveen" class="khand-button" onclick="setPaySubCategory('नवीन')">नवीन</button>
+          </div>
+        </div>
+
+        <div class="khoj-mukhya-row">
+          <div class="khoj-input-dabba">
+            <svg class="icon-svg khoj-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="paySectionSearchInput" placeholder="भुगतान हेतु दानदाता खोजें..." oninput="renderPaySectionDonorList()">
+          </div>
+        </div>
+
+        <div style="margin-top:8px;">
+          <div class="status-button-samuh">
+            <button id="btnPayFilterAll" class="status-chayan-btn sakriya" onclick="setPayFilterStatus('सभी')">सभी दानदाता</button>
+            <button id="btnPayFilterBakaya" class="status-chayan-btn" onclick="setPayFilterStatus('बकाया')">बकाया वाले दानदाता</button>
+            <button id="btnPayFilterAnshik" class="status-chayan-btn" onclick="setPayFilterStatus('आंशिक बकाया')">आंशिक बकाया</button>
+            <button id="btnPayFilterPurnaBakaya" class="status-chayan-btn" onclick="setPayFilterStatus('पूर्ण बकाया')">पूर्ण बकाया</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="paySectionDonorListPatt"></div>
+    </div>
+
+    <!-- 3. दानदाता विवरण सूची खंड (Donor Directory Section) -->
+    <div id="samastPravishtiyan" style="display:none;">
+      <div class="sthir-patti">
+        <div class="khand-samuh">
+          <button id="tabBtnSamast" class="khand-button sakriya" onclick="upKhandBadle('समस्त')">समस्त दानदाता</button>
+          <button id="tabBtnMasik" class="khand-button" onclick="upKhandBadle('मासिक')">मासिक</button>
+          <button id="tabBtnVarshik" class="khand-button" onclick="upKhandBadle('वार्षिक')">वार्षिक</button>
+          <button id="tabBtnNaveen" class="khand-button" onclick="upKhandBadle('नवीन')">नवीन</button>
+        </div>
+      </div>
+
+      <!-- खोज एवं फ़िल्टर -->
+      <div class="khoj-patti">
+        <div class="khoj-mukhya-row">
+          <div class="khoj-input-dabba">
+            <svg class="icon-svg khoj-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="khojShabd" placeholder="दानदाता नाम या विवरण खोजें...">
+          </div>
+          <button id="btnFilterToggle" class="btn-filter-toggle" onclick="filterVikalpToggle()">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+            <span>फ़िल्टर</span>
+          </button>
+        </div>
+
+        <div id="chhipeFilterVikalp" class="chhipe-filter-vikalp">
+          <!-- स्थिति फ़िल्टर -->
+          <div style="margin-bottom: 10px;">
+            <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:4px;">भुगतान स्थिति:</label>
+            <div class="status-button-samuh">
+              <button id="filterStatusAll" class="status-chayan-btn sakriya" onclick="setFilterStatus('सभी')">सभी स्थिति</button>
+              <button id="filterStatusPurnaPrapt" class="status-chayan-btn" onclick="setFilterStatus('पूर्ण प्राप्त')">पूर्ण प्राप्त</button>
+              <button id="filterStatusAnshikPrapt" class="status-chayan-btn" onclick="setFilterStatus('आंशिक प्राप्त')">आंशिक प्राप्त</button>
+              <button id="filterStatusPurnaBakaya" class="status-chayan-btn" onclick="setFilterStatus('पूर्ण बकाया')">पूर्ण बकाया</button>
+              <button id="filterStatusAnshikBakaya" class="status-chayan-btn" onclick="setFilterStatus('आंशिक बकाया')">आंशिक बकाया</button>
+            </div>
+          </div>
+
+          <!-- नियत धनराशि वाइज फ़िल्टर -->
+          <div style="margin-bottom: 8px;">
+            <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:4px;">नियत धनराशि (₹) फ़िल्टर:</label>
+            <div style="display:flex; gap:8px;">
+              <input type="number" id="khojNiyatRakam" placeholder="नियत राशि लिखें (जैसे 730, 1100, 501...)" oninput="chhantaiLagayein()" style="flex:1; padding:8px 10px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none;">
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button class="btn-reset-filter" onclick="khojHatao()">सभी फ़िल्टर साफ़ करें</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="pravishtiSuchiPatt"></div>
+
+      <!-- Floating Add Button -->
+      <button id="fabBtn" class="fab-add-btn" onclick="fabButtonClicked()">
+        <svg style="width:26px; height:26px; fill:#fff;" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </button>
+    </div>
+
+    <!-- 4. हटाई गई प्रविष्टियाँ खंड -->
+    <div id="hatayiGayiPravishtiyan" style="display:none;">
+      <div class="sthir-patti">
+        <div class="khand-samuh">
+          <button id="hatayiMasikButton" class="khand-button sakriya" onclick="hatayaUpKhandBadle('मासिक')">हटाया गया मासिक</button>
+          <button id="hatayiVarshikButton" class="khand-button" onclick="hatayaUpKhandBadle('वार्षिक')">हटाया गया वार्षिक</button>
+          <button id="hatayiNaveenButton" class="khand-button" onclick="hatayaUpKhandBadle('नवीन')">हटाया गया नवीन</button>
+        </div>
+      </div>
+
+      <div id="hatayiSuchiPatt"></div>
+    </div>
+
+  </div>
+
+  <!-- निचली दिशा-सूचक पट्टी (4 Main Tabs) -->
+  <div class="tala-patti">
+    <button id="suchakMukhya" class="suchak-button sakriya" onclick="pannaBadle('mukhya')">
+      <svg class="icon-svg" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      <span>डैशबोर्ड</span>
+    </button>
+    <button id="suchakBhugtan" class="suchak-button" onclick="pannaBadle('bhugtanKhand')">
+      <svg class="icon-svg" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+      <span>भुगतान दर्ज करें</span>
+    </button>
+    <button id="suchakPravishti" class="suchak-button" onclick="pannaBadle('pravishti')">
+      <svg class="icon-svg" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+      <span>दानदाता सूची</span>
+    </button>
+    <button id="suchakHataya" class="suchak-button" onclick="pannaBadle('hataya')">
+      <svg class="icon-svg" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+      <span>हटाया गया</span>
+    </button>
+  </div>
+
+  <!-- 1. नया दानदाता जोड़ें / नियत राशि बढ़ाएं-घटाएं एडिट मोडल (Modal) -->
+  <div id="prapatraParda" class="avaran-parda" onclick="handleBackdropClick(event, 'prapatraParda')">
+    <div class="prapatra-kosh">
+      <div class="prapatra-header-bar">
+        <h3 id="prapatraSheershak">दानदाता प्रविष्टि</h3>
+        <button class="btn-popup-close-x" onclick="prapatraBandKarein()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+
+      <input type="hidden" id="chhipaKramank">
+
+      <div class="kosh-khand">
+        <label>दानदाता श्रेणी *</label>
+        <select id="prapatraPrakar">
+          <option value="मासिक">मासिक दानदाता</option>
+          <option value="वार्षिक">वार्षिक दानदाता</option>
+          <option value="नवीन">नवीन दानदाता</option>
+        </select>
+      </div>
+      
+      <div class="kosh-khand">
+        <label>सदस्य / दानदाता का नाम *</label>
+        <input type="text" id="prapatraNaam" placeholder="नाम लिखें (उदा. रमेश शर्मा)">
+      </div>
+      
+      <div class="kosh-khand">
+        <label>पिता का नाम</label>
+        <input type="text" id="prapatraPitaNaam" placeholder="पिता का नाम लिखें">
+      </div>
+
+      <div class="kosh-khand">
+        <label>नियत धनराशि (₹) * <span style="font-weight:normal; font-size:11.5px; color:#2563eb;">(इसे आवश्यकतानुसार बढ़ाया/घटाया जा सकता है)</span></label>
+        <input type="number" id="prapatraNiyatRakam" placeholder="नियत राशि लिखें" min="0" step="1">
+      </div>
+
+      <div class="kosh-khand">
+        <label>विवरण / रिमार्क</label>
+        <textarea id="prapatraVivaran" rows="2" placeholder="अतिरिक्त विवरण लिखें"></textarea>
+      </div>
+      
+      <div class="prapatra-karyavahi">
+        <button class="btn-radd" onclick="prapatraBandKarein()">रद्द करें</button>
+        <button class="btn-surakshit" onclick="prapatraSurakshitKarein()">सुरक्षित करें</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. भुगतान प्रविष्टि दर्ज करें मोडल (Payment Entry Modal) -->
+  <div id="bhugtanEntryModal" class="avaran-parda" onclick="handleBackdropClick(event, 'bhugtanEntryModal')">
+    <div class="prapatra-kosh">
+      <div class="prapatra-header-bar">
+        <h3 id="payModalTitle">भुगतान प्रविष्टि दर्ज करें</h3>
+        <button class="btn-popup-close-x" onclick="closePayEntryModal()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+
+      <!-- दानदाता समरी बॉक्स -->
+      <div id="payModalSummaryBox" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:14px;">
+        <div style="font-weight:800; font-size:16px; color:#0f172a;" id="payMName"></div>
+        <div style="font-size:12px; color:#64748b;" id="payMCat"></div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:13.5px; font-weight:700; border-top:1px dashed #cbd5e1; padding-top:6px;">
+          <span style="color:#2563eb;">नियत: <span id="payMNiyat"></span></span>
+          <span style="color:#059669;">प्राप्त: <span id="payMPrapt"></span></span>
+          <span style="color:#dc2626;">बकाया: <span id="payMBakaya"></span></span>
+        </div>
+      </div>
+
+      <!-- A) मासिक दानदाताओं का भुगतान विवरण एवं सम्पादन -->
+      <div id="payMasikWrapper" style="display:none;">
+        <label style="color:#059669; font-weight:800; font-size:13.5px; margin-bottom:8px; display:block;">मासिक भुगतान विवरण (माह वार संपादन हेतु सम्पादित करें पर क्लिक करें):</label>
+        <div id="payMasikMonthsContainer"></div>
+      </div>
+
+      <!-- B) वार्षिक एवं नवीन दानदाताओं का भुगतान दर्ज करने का फॉर्म -->
+      <div id="payGenericWrapper" style="display:none;">
+        <!-- पूर्व दर्ज भुगतान विवरण सूची -->
+        <div id="payPastListWrapper" style="display:none; margin-bottom:16px;">
+          <label style="font-weight:800; font-size:13.5px; color:#475569; display:block; margin-bottom:6px;">पूर्व दर्ज भुगतान विवरण सूची:</label>
+          <div id="payPastListContainer" style="max-height:350px; overflow-y:auto; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; padding:10px; font-size:12.5px;"></div>
+        </div>
+
+        <!-- भुगतान फॉर्म -->
+        <div id="payFormBlock">
+          <label id="payFormBlockHeading" style="font-weight:800; font-size:14px; color:#1d4ed8; margin-bottom:8px; display:block;">भुगतान दर्ज करें:</label>
+          
+          <div class="kosh-khand">
+            <label>भुगतान की तारीख *</label>
+            <input type="date" id="payGenTarikh">
+          </div>
+
+          <div class="kosh-khand">
+            <label>भुगतान धनराशि (₹) *</label>
+            <input type="number" id="payGenRakam" placeholder="धनराशि दर्ज करें" min="1" step="1">
+          </div>
+
+          <div class="kosh-khand">
+            <label>भुगतान माध्यम *</label>
+            <div class="madhyam-button-samuh">
+              <button type="button" id="btnPayGenNakad" class="madhyam-chayan-btn sakriya" onclick="chuniyeGenMadhyam('नकद')">
+                <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                <span>₹ नकद</span>
+              </button>
+              <button type="button" id="btnPayGenOnline" class="madhyam-chayan-btn" onclick="chuniyeGenMadhyam('ऑनलाइन')">
+                <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+                <span>ऑनलाइन</span>
+              </button>
+              <button type="button" id="btnPayGenRaseed" class="madhyam-chayan-btn" style="display:none;" onclick="chuniyeGenMadhyam('रसीद')">
+                <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2l-1.5 1.5L6 2L4.5 3.5 3 2v20z"/></svg>
+                <span>रसीद</span>
+              </button>
+            </div>
+            <input type="hidden" id="chhipaGenMadhyam" value="नकद">
+          </div>
+
+          <div class="kosh-khand">
+            <label>विवरण / रिमार्क</label>
+            <input type="text" id="payGenVivaran" placeholder="उदा. आंशिक भुगतान, पूर्ण भुगतान...">
+          </div>
+
+          <div class="prapatra-karyavahi" style="margin-top:10px;">
+            <button class="btn-surakshit" onclick="saveGenericPayment()">भुगतान जमा करें</button>
+          </div>
+        </div>
+
+        <!-- यदि पूर्ण भुगतान हो चुका हो -->
+        <div id="payFullyPaidBanner" style="display:none; background:#d1fae5; border:1px solid #10b981; color:#065f46; border-radius:10px; padding:10px; text-align:center; font-weight:800; margin-bottom:12px;">
+          ✓ दानदाता द्वारा पूर्ण नियत धनराशि प्राप्त हो चुकी है!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. दानदाता विवरण एवं एक्शन मोडल (View Modal) -->
+  <div id="vivaranDetailModal" class="avaran-parda" onclick="handleBackdropClick(event, 'vivaranDetailModal')">
+    <div class="prapatra-kosh">
+      <div class="prapatra-header-bar">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <h3 id="detailPrakarTitle">दानदाता विवरण</h3>
+          <span id="detailBadge" class="status-chinh"></span>
+        </div>
+        <button class="btn-popup-close-x" onclick="closeDetailModal()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      
+      <div style="margin: 14px 0 18px 0;">
+        <div class="vivaran-detail-row"><strong>नाम:</strong> <span id="detailNaam" style="font-weight:800;"></span></div>
+        <div class="vivaran-detail-row"><strong>पिता का नाम:</strong> <span id="detailPita"></span></div>
+        <div class="vivaran-detail-row"><strong>नियत राशि:</strong> <span id="detailNiyat" style="font-weight:700; color:#2563eb;"></span></div>
+        <div class="vivaran-detail-row"><strong>प्राप्त धनराशि:</strong> <span id="detailPrapt" style="font-size:16px; font-weight:800; color:#059669;"></span></div>
+        <div class="vivaran-detail-row"><strong>बकाया धनराशि:</strong> <span id="detailBakaya" style="font-size:15px; font-weight:800; color:#dc2626;"></span></div>
+        
+        <!-- मासिक विवरण -->
+        <div class="vivaran-detail-row" id="detailMasikBreakdown" style="display:none;">
+          <strong>मासिक भुगतान व माध्यम विवरण:</strong>
+          <div id="detailMonthsGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:4px; font-size:11.5px; background:#f8fafc; padding:8px; border-radius:8px;"></div>
+        </div>
+
+        <!-- वार्षिक / नवीन भुगतानों का विवरण -->
+        <div class="vivaran-detail-row" id="detailKishteBreakdown" style="display:none;">
+          <strong>भुगतान विवरण सूची:</strong>
+          <div id="detailKishteGrid" style="margin-top:4px; font-size:11.5px; background:#f8fafc; padding:8px; border-radius:8px;"></div>
+        </div>
+
+        <div class="vivaran-detail-row"><strong>विवरण:</strong> <span id="detailVivaran"></span></div>
+        <div class="vivaran-detail-row" style="border:none;"><strong>प्रविष्टि कर्ता:</strong> <span id="detailKarta"></span></div>
+      </div>
+
+      <div class="prapatra-karyavahi" style="justify-content: flex-end;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+          <button id="btnDetailPay" class="btn-modal-action btn-modal-pay">
+            <span>भुगतान दर्ज करें</span>
+          </button>
+          <button id="btnDetailMove" class="btn-modal-action" style="background:#8b5cf6; color:#ffffff;" onclick="openMoveCategoryModal()">
+            <span>श्रेणी बदलें (मूव)</span>
+          </button>
+          <button id="btnDetailEdit" class="btn-modal-action btn-modal-edit">
+            <span>नियत राशि/विवरण बदलें</span>
+          </button>
+          <button id="btnDetailDelete" class="btn-modal-action btn-modal-delete">
+            <span>हटाएं</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. श्रेणी परिवर्तन / मूव दानदाता मोडल (Category Move Modal) -->
+  <div id="shreniBadleModal" class="avaran-parda" onclick="handleBackdropClick(event, 'shreniBadleModal')">
+    <div class="prapatra-kosh">
+      <div class="prapatra-header-bar">
+        <h3>दानदाता श्रेणी बदलें (मूव करें)</h3>
+        <button class="btn-popup-close-x" onclick="closeMoveCategoryModal()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      
+      <div style="margin: 14px 0;">
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px; margin-bottom:12px;">
+          <div><strong style="color:#0f172a; font-size:15px;" id="moveDonorName"></strong></div>
+          <div style="font-size:12px; color:#64748b;" id="moveDonorCurrentInfo"></div>
+        </div>
+
+        <div class="kosh-khand">
+          <label style="font-weight:800; color:#1e293b;">नई श्रेणी चुनें *</label>
+          <select id="selectTargetCategory" style="width:100%; padding:9px 12px; border:1.5px solid #cbd5e1; border-radius:10px; font-size:13.5px; font-weight:700; color:#0f172a; background:#ffffff;">
+            <option value="मासिक">मासिक दानदाता</option>
+            <option value="वार्षिक">वार्षिक दानदाता</option>
+            <option value="नवीन">नवीन दानदाता</option>
+          </select>
+        </div>
+
+        <div style="font-size:11.5px; color:#475569; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:8px; margin-top:10px;">
+          ℹ️ <strong>सूचना:</strong> दानदाता को नई श्रेणी में मूव करने पर उनके पूर्व में दर्ज समस्त प्राप्त व नियत धनराशि का विवरण नई श्रेणी में सुरक्षित स्थानांतरित हो जाएगा।
+        </div>
+      </div>
+
+      <div class="prapatra-karyavahi">
+        <button class="btn-radd" onclick="closeMoveCategoryModal()">रद्द करें</button>
+        <button class="btn-surakshit" style="background:#8b5cf6;" onclick="confirmMoveCategory()">मूव की पुष्टि करें</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. पुष्टि संवाद (Confirmation Dialog) -->
+  <div id="pushtiParda" class="avaran-parda" onclick="handleBackdropClick(event, 'pushtiParda')">
+    <div class="prapatra-kosh">
+      <div class="prapatra-header-bar">
+        <h3 id="pushtiSheershak">पुष्टि करें</h3>
+        <button class="btn-popup-close-x" onclick="pushtiBandKarein()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <p id="pushtiSandesh" style="font-size: 14px; color: #475569; margin-bottom: 16px;"></p>
+      <div class="prapatra-karyavahi">
+        <button class="btn-radd" onclick="pushtiBandKarein()">नहीं</button>
+        <button id="pushtiAageBado" class="btn-surakshit">हाँ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. सेटिंग्स / Worker URL कॉन्फ़िगरेशन मोडल -->
+  <div id="settingsModal" class="avaran-parda" onclick="handleBackdropClick(event, 'settingsModal')">
+    <div class="prapatra-kosh">
+      <div class="prapatra-header-bar">
+        <h3>Backend API सेटिंग्स</h3>
+        <button class="btn-popup-close-x" onclick="closeSettingsModal()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      
+      <div style="margin: 14px 0;">
+        <div class="kosh-khand">
+          <label>Cloudflare Worker URL *</label>
+          <input type="url" id="settingsWorkerUrl" placeholder="https://sheetla-dham-api.YOUR-SUBDOMAIN.workers.dev">
+          <div style="font-size:11.5px; color:#64748b; margin-top:4px;">
+            अपने डिप्लॉय किए गए Cloudflare Worker का URL यहाँ दर्ज करें। यह ब्राउज़र के LocalStorage में सुरक्षित रहता है।
+          </div>
+        </div>
+
+        <div class="kosh-khand">
+          <label>प्रयोक्ता का नाम (User Name)</label>
+          <input type="text" id="settingsUserName" placeholder="व्यवस्थापक">
+        </div>
+      </div>
+
+      <div class="prapatra-karyavahi">
+        <button class="btn-radd" onclick="closeSettingsModal()">रद्द करें</button>
+        <button class="btn-surakshit" onclick="saveSettings()">सेव करें और पुनः कनेक्ट करें</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- टोस्ट सूचना पट्टी -->
+  <div id="suchnaPatti"></div>
+
+  <!-- प्रिंट/पीडीएफ स्टेटमेंट रेंडरिंग कंटेनर -->
+  <div id="printStatementArea" style="display:none;"></div>
+
+  <!-- Frontend JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>

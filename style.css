@@ -1,0 +1,984 @@
+/* ==========================================================================
+   श्री शीतला धाम मंदिर — दानदाता प्रबंधन
+   स्टाइलशीट (Frontend Stylesheet)
+   ========================================================================== */
+
+:root {
+  --bg-color: #f1f5f9;
+  --card-bg: #ffffff;
+  --primary-color: #0f172a;
+  --masik-color: #059669;
+  --masik-light: #ecfdf5;
+  --varshik-color: #2563eb;
+  --varshik-light: #eff6ff;
+  --naveen-color: #d97706;
+  --naveen-light: #fffbeb;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --danger-color: #dc2626;
+  --success-color: #059669;
+  --warning-color: #d97706;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Mukta', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  padding-bottom: 84px;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* शीर्षासन पट्टी (Header) */
+.sheersh-patti {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.sheersh-patti h1 {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.button-wapas {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(8px);
+}
+
+.btn-header-icon {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.btn-header-icon:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.mukhya-dabba {
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 14px;
+}
+
+/* त्वरित कार्य बटन */
+.shirsh-karya-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.btn-top-action {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #ffffff;
+  transition: transform 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn-top-action:active {
+  transform: scale(0.97);
+}
+
+.btn-add-action {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.btn-pay-action {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+/* पत्रक ग्रिड संरचना */
+.falakh-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.patrak {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: transform 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.patrak:active {
+  transform: scale(0.98);
+}
+
+.patrak.masik-rang {
+  border-top: 4px solid #10b981;
+  background: linear-gradient(180deg, #ffffff 60%, #ecfdf5 100%);
+}
+
+.patrak.varshik-rang {
+  border-top: 4px solid #3b82f6;
+  background: linear-gradient(180deg, #ffffff 60%, #eff6ff 100%);
+}
+
+.patrak.naveen-rang {
+  border-top: 4px solid #f59e0b;
+  background: linear-gradient(180deg, #ffffff 60%, #fffbeb 100%);
+  grid-column: span 2;
+}
+
+.patrak-purna {
+  grid-column: span 2;
+  border-top: 4px solid #0f172a;
+  background: linear-gradient(180deg, #ffffff 50%, #f8fafc 100%);
+  padding: 16px 18px;
+}
+
+.patrak-sheershak {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-transform: uppercase;
+}
+
+.patrak-rakam {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 4px 0;
+  color: var(--masik-color);
+}
+
+.patrak-purna .patrak-rakam {
+  font-size: 28px;
+}
+
+.patrak-vibhajan {
+  font-size: 12px;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 8px;
+  margin-top: 6px;
+}
+
+.patrak-purna .patrak-vibhajan {
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.btn-patrika-download {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+
+.btn-patrika-download:active {
+  opacity: 0.9;
+}
+
+/* स्थायी उप-खंड पट्टी (Tabs) */
+.sthir-patti {
+  position: sticky;
+  top: 58px;
+  z-index: 30;
+  background: var(--bg-color);
+  padding: 8px 0;
+}
+
+.khand-samuh {
+  display: flex;
+  background: #e2e8f0;
+  border-radius: 12px;
+  padding: 4px;
+  overflow-x: auto;
+}
+
+.khand-button {
+  flex: 1;
+  border: none;
+  padding: 9px 8px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 700;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.khand-button.sakriya {
+  background: #ffffff;
+  color: var(--text-main);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* खोज एवं फ़िल्टर पट्टी */
+.khoj-patti {
+  position: sticky;
+  top: 110px;
+  z-index: 25;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  margin-bottom: 14px;
+  border: 1px solid var(--border-color);
+}
+
+.khoj-mukhya-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.khoj-input-dabba {
+  position: relative;
+  flex: 1;
+}
+
+.khoj-input-dabba input {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  background: #f8fafc;
+}
+
+.khoj-input-dabba input:focus {
+  border-color: #3b82f6;
+  background: #ffffff;
+}
+
+.khoj-icon-svg {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.btn-filter-toggle {
+  border: 1.5px solid var(--border-color);
+  background: #f8fafc;
+  color: #334155;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn-filter-toggle.khula {
+  background: #e2e8f0;
+  border-color: #64748b;
+  color: #0f172a;
+}
+
+.chhipe-filter-vikalp {
+  display: none;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.status-button-samuh {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.status-chayan-btn {
+  flex: none;
+  border: 1.5px solid var(--border-color);
+  background: #ffffff;
+  color: #475569;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.status-chayan-btn:active {
+  transform: scale(0.97);
+}
+
+.status-chayan-btn.sakriya {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-reset-filter {
+  background: #e2e8f0;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+}
+
+/* प्रविष्टि कार्ड */
+.pravishti-patra {
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  border-left: 4px solid #cbd5e1;
+  border-top: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.pravishti-patra:active {
+  transform: scale(0.985);
+}
+
+.pravishti-patra.masik-card {
+  border-left-color: #10b981;
+}
+
+.pravishti-patra.varshik-card {
+  border-left-color: #3b82f6;
+}
+
+.pravishti-patra.naveen-card {
+  border-left-color: #f59e0b;
+}
+
+.pravishti-matha {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pravishti-naam {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.pravishti-pita {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.pravishti-rakam-box {
+  text-align: right;
+}
+
+.pravishti-rakam-prapt {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #059669;
+}
+
+.pravishti-rakam-niyat {
+  font-size: 11.5px;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.pravishti-rakam-bakaya {
+  font-size: 11.5px;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.status-chinh {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.status-purna {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-anshik-prapt {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-bakaya-purna {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-anshik-bakaya {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+  margin-right: 6px;
+  text-transform: uppercase;
+}
+
+.cat-masik {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.cat-varshik {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.cat-naveen {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pravishti-vivaran {
+  font-size: 13px;
+  color: var(--text-main);
+  margin: 5px 0 2px 0;
+  word-break: break-word;
+  font-weight: 500;
+}
+
+/* पुनः लाएं बटन */
+.btn-punah-lao-modern {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.btn-punah-lao-modern:active {
+  transform: scale(0.96);
+}
+
+/* Floating Action Button (FAB) */
+.fab-add-btn {
+  position: fixed;
+  bottom: 82px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  color: #ffffff;
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 45;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.fab-add-btn:active {
+  transform: scale(0.92);
+}
+
+/* निचली दिशा-सूचक पट्टी (4-Tabs Bottom Nav) */
+.tala-patti {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #ffffff;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 50;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.suchak-button {
+  flex: 1;
+  height: 100%;
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.suchak-button.sakriya {
+  color: #0f172a;
+}
+
+/* प्रपत्र आवरण (Modals) */
+.avaran-parda {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.prapatra-kosh {
+  background: #ffffff;
+  width: 100%;
+  max-width: 520px;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.prapatra-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.prapatra-header-bar h3 {
+  font-size: 18px;
+  color: var(--text-main);
+  font-weight: 800;
+  margin: 0;
+}
+
+.btn-popup-close-x {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.btn-popup-close-x:active {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.kosh-khand {
+  margin-bottom: 11px;
+}
+
+.kosh-khand label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #475569;
+}
+
+.kosh-khand input,
+.kosh-khand select,
+.kosh-khand textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+}
+
+.kosh-khand input:focus,
+.kosh-khand select:focus,
+.kosh-khand textarea:focus {
+  border-color: #3b82f6;
+}
+
+.masik-month-card {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.masik-month-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  min-width: 65px;
+}
+
+.masik-month-val {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #059669;
+}
+
+.btn-edit-month {
+  background: #e2e8f0;
+  border: none;
+  color: #0f172a;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.medium-toggle-btn {
+  border: 1.5px solid var(--border-color);
+  background: #ffffff;
+  color: #475569;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.medium-toggle-btn.online-active {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.madhyam-button-samuh {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.madhyam-chayan-btn {
+  flex: 1;
+  border: 1.5px solid var(--border-color);
+  background: #ffffff;
+  color: #475569;
+  padding: 8px 6px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.madhyam-chayan-btn:active {
+  transform: scale(0.97);
+}
+
+.madhyam-chayan-btn.sakriya {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+}
+
+.prapatra-karyavahi {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.btn-radd {
+  background: #f1f5f9;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+}
+
+.btn-surakshit {
+  background: #0f172a;
+  color: #fff;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modern Action Buttons */
+.btn-modal-action {
+  border: none;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.15s ease;
+}
+
+.btn-modal-action:active {
+  transform: scale(0.96);
+}
+
+.btn-modal-pay {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.btn-modal-edit {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.btn-modal-delete {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+}
+
+.vivaran-detail-row {
+  margin-bottom: 8px;
+  font-size: 13.5px;
+  border-bottom: 1px dashed #f1f5f9;
+  padding-bottom: 5px;
+}
+
+.vivaran-detail-row strong {
+  color: #475569;
+}
+
+#suchnaPatti {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #fff;
+  padding: 11px 22px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  display: none;
+  z-index: 110;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.icon-svg {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  fill: currentColor;
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton-box {
+  display: inline-block;
+  height: 1em;
+  position: relative;
+  overflow: hidden;
+  background-color: #e2e8f0;
+  border-radius: 6px;
+}
+
+.skeleton-box::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.6) 30%,
+    rgba(255, 255, 255, 0.8) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmerAnimation 1.6s infinite;
+  content: '';
+}
+
+@keyframes shimmerAnimation {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Connection Status Badge in Header */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.status-indicator.connected {
+  color: #a7f3d0;
+}
+
+.status-indicator.error {
+  color: #fecaca;
+}
+
+/* Print View Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    padding-bottom: 0 !important;
+  }
+  .sheersh-patti,
+  .tala-patti,
+  .fab-add-btn,
+  .shirsh-karya-grid,
+  .sthir-patti,
+  .khoj-patti,
+  .btn-patrika-download,
+  .avaran-parda,
+  #suchnaPatti {
+    display: none !important;
+  }
+  .mukhya-dabba {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  #printStatementArea {
+    display: block !important;
+  }
+}
