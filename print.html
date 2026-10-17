@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>एक्सेल से पीडीएफ रिपोर्ट जनरेटर (आधुनिक व्यावसायिक प्रारूप)</title>
+  
+  <!-- Modern Google Fonts: Inter & Noto Sans Devanagari -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- SheetJS (Excel Parser) and html2pdf.js (PDF Generator) via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    /* =========================================================================
+       MODERN PROFESSIONAL DESIGN SYSTEM
+       ========================================================================= */
+    :root {
+      --font-family: 'Inter', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --bg-page: #0f172a;
+      --bg-surface: #ffffff;
+      --primary: #2563eb;
+      --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      --success-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+      --text-dark: #0f172a;
+      --text-body: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --border-light: #e2e8f0;
+      --navy-header: #1e293b;
+      --emerald-dark: #047857;
+      --rose-dark: #be123c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: #f1f5f9;
+      color: var(--text-body);
+      padding: 24px 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Web App Container */
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* App Header */
+    .app-header {
+      background: white;
+      padding: 20px 28px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      border: 1px solid var(--border-light);
+    }
+
+    .header-title h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .header-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    /* Modern Pill Tabs */
+    .tabs-nav {
+      display: flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 12px;
+      gap: 6px;
+      border: 1px solid var(--border-light);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 9px;
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-dark);
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Control Card & Dropzone */
+    .control-card {
+      background: white;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+      margin-bottom: 24px;
+      border: 1px solid var(--border-light);
+    }
+
+    .dropzone {
+      border: 2px dashed #94a3b8;
+      border-radius: 12px;
+      padding: 28px 20px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background: #eff6ff;
+      transform: translateY(-1px);
+    }
+
+    .dropzone-icon {
+      font-size: 38px;
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .dropzone-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .dropzone-subtext {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+      gap: 12px;
+    }
+
+    .file-status {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-light);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-success {
+      background: var(--success-gradient);
+      color: white;
+    }
+
+    .btn-success:hover {
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+    }
+
+    /* Live Document A4 Wrapper */
+    .preview-wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 10px 0 40px 0;
+    }
+
+    .a4-document {
+      width: 210mm;
+      min-height: 297mm;
+      background: white;
+      padding: 14mm 12mm;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      position: relative;
+      color: #0f172a;
+      box-sizing: border-box;
+    }
+
+    /* =========================================================================
+       MODERN REPORT DOCUMENT STYLING (Inside #printableDoc)
+       ========================================================================= */
+    .modern-doc-header {
+      text-align: center;
+      margin-bottom: 18px;
+      position: relative;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #0f172a;
+    }
+
+    .modern-shree {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #b45309;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .modern-main-title {
+      font-size: 19pt;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.2px;
+    }
+
+    /* Modern Ledger Tables */
+    .ledger-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      font-size: 9pt;
+      page-break-inside: auto;
+    }
+
+    .section-banner-row td {
+      background: #1e293b !important;
+      color: #ffffff !important;
+      font-size: 11pt !important;
+      font-weight: 700 !important;
+      text-align: center !important;
+      padding: 7px 12px !important;
+      letter-spacing: 0.4px;
+      border: 1px solid #1e293b !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .ledger-table th {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+      font-weight: 700;
+      padding: 6px 8px !important;
+      border: 1px solid #cbd5e1 !important;
+      font-size: 9pt;
+      line-height: 1.3;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .ledger-table td {
+      padding: 5px 8px !important;
+      border: 1px solid #cbd5e1 !important;
+      color: #1e293b;
+      font-size: 9pt;
+      line-height: 1.35;
+    }
+
+    .ledger-table tbody tr:nth-child(even):not(.subtotal-row):not(.subtotal-mode-row):not(.date-banner-row) {
+      background-color: #f8fafc;
+    }
+
+    /* Subtotal & Mode Breakdown Rows */
+    .subtotal-row td {
+      background-color: #f1f5f9 !important;
+      font-weight: 700 !important;
+      color: #0f172a !important;
+      border-top: 2px solid #0f172a !important;
+      border-bottom: 1px dashed #94a3b8 !important;
+      font-size: 9.5pt !important;
+      padding: 6px 8px !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .subtotal-mode-row td {
+      background-color: #f8fafc !important;
+      border-top: none !important;
+      border-bottom: 3px double #0f172a !important;
+      font-size: 8.5pt !important;
+      padding: 5px 8px !important;
+      color: #334155;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Comparative Center Dividing Double Border */
+    .border-double-right {
+      border-right: 3px double #0f172a !important;
+    }
+
+    .border-double-left {
+      border-left: 3px double #0f172a !important;
+    }
+
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: 700; }
+
+    /* Payment Mode Badges (Pills) */
+    .mode-pill {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 8.5pt;
+      font-weight: 600;
+      white-space: nowrap;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .mode-online {
+      background-color: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+    }
+
+    .mode-cash {
+      background-color: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .mode-receipt {
+      background-color: #fefce8;
+      color: #854d0e;
+      border: 1px solid #fde047;
+    }
+
+    .due-amount {
+      color: #dc2626;
+      font-weight: 700;
+    }
+
+    /* Date Banner in Expense Side */
+    .date-banner-row {
+      background-color: #f8fafc !important;
+      font-weight: 700 !important;
+      color: #0f172a !important;
+      text-align: left !important;
+      padding: 5px 10px !important;
+      font-size: 9pt;
+      border-top: 1px solid #cbd5e1 !important;
+      border-bottom: 1px solid #cbd5e1 !important;
+    }
+
+    /* Modern Summary Table Card */
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+
+    .summary-header-cell {
+      background: #1e293b !important;
+      color: #ffffff !important;
+      text-align: center;
+      padding: 8px 12px !important;
+      font-size: 11pt !important;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      border: 1px solid #1e293b !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .summary-metric-cell {
+      padding: 10px 16px !important;
+      border: 1px solid #cbd5e1 !important;
+      background: #ffffff;
+      vertical-align: top;
+      font-size: 9.5pt;
+    }
+
+    .grand-balance-cell {
+      background-color: #f8fafc !important;
+      padding: 12px 16px !important;
+      border: 1px solid #cbd5e1 !important;
+      text-align: center;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .grand-balance-title {
+      font-size: 12.5pt;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .grand-balance-details {
+      font-size: 9.5pt;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 4px;
+    }
+
+    /* Page Break for Pending Donors List */
+    .page-break-before {
+      page-break-before: always !important;
+      break-before: page !important;
+      margin-top: 35px;
+      padding-top: 20px;
+      border-top: 2px dashed #94a3b8;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #64748b;
+    }
+
+    /* Print Media Rules */
+    @media print {
+      body {
+        background: white !important;
+        padding: 0 !important;
+      }
+
+      .app-header,
+      .control-card,
+      .tabs-nav,
+      .action-bar {
+        display: none !important;
+      }
+
+      .preview-wrapper {
+        background: white !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .a4-document {
+        box-shadow: none !important;
+        width: 100% !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+      }
+
+      @page {
+        size: A4 portrait;
+        margin: 8mm 6mm 8mm 6mm;
+      }
+
+      tr {
+        page-break-inside: avoid;
+      }
+
+      .page-break-before {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        border-top: none !important;
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- Web App Navigation & Header -->
+  <header class="app-header">
+    <div class="header-title">
+      <h1>📊 एक्सेल से पीडीएफ रिपोर्ट जनरेटर</h1>
+      <p>दानदाताओ का विवरण एवं आय-व्यय तुलनात्मक बहीखाता (आधुनिक व्यावसायिक प्रारूप)</p>
+    </div>
+
+    <div class="tabs-nav">
+      <button class="tab-btn active" id="tabDonors" onclick="switchReportTab('donors')">
+        <span>📋</span> दानदाताओ का विवरण
+      </button>
+      <button class="tab-btn" id="tabIncomeExpense" onclick="switchReportTab('income_expense')">
+        <span>⚖️</span> आय एवं व्यय का विवरण
+      </button>
+    </div>
+  </header>
+
+  <!-- Control & File Upload Panel -->
+  <section class="control-card">
+    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+      <div class="dropzone-icon">📁</div>
+      <div class="dropzone-text" id="dropzoneText">यहाँ एक्सेल फ़ाइल (.xlsx / .xls) ड्रैग करें या क्लिक करके चुनें</div>
+      <div class="dropzone-subtext">दोनों प्रारूप समर्थित हैं: "दानदाता प्रबंधन" या "आय एवं व्यय का विवरण" (सिस्टम अपने आप पहचान लेगा)</div>
+      <input type="file" id="fileInput" class="file-input" accept=".xlsx, .xls" onchange="handleFileSelect(event)">
+    </div>
+
+    <div class="action-bar">
+      <div class="file-status" id="fileStatus">
+        <span>ℹ️ वर्तमान स्थिति: </span> <span id="statusText">फ़ाइल प्रतीक्षारत (कृपया अपनी एक्सेल फ़ाइल अपलोड करें)</span>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="generatePdfDirect()">
+          <span>📥</span> पीडीएफ़ डाउनलोड करें
+        </button>
+        <button class="btn btn-success" onclick="handlePrint()">
+          <span>🖨️</span> प्रिंट / PDF सेव करें
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Document A4 Preview -->
+  <main class="preview-wrapper">
+    <div class="a4-document" id="printableDoc">
+      <!-- Report Content Rendered Dynamically Here -->
+    </div>
+  </main>
+
+</div>
+
+<script>
+// =========================================================================
+// APPLICATION STATE & DATA MODEL
+// =========================================================================
+let currentTab = 'donors'; // 'donors' or 'income_expense'
+let loadedDonorsData = null;
+let loadedIncomeExpenseData = null;
+
+// Helper Functions
+function formatAmt(num) {
+  if (num === null || num === undefined || isNaN(num)) return '0/-';
+  return new Intl.NumberFormat('en-IN').format(Math.round(num)) + '/-';
+}
+
+function parseDate(dStr) {
+  if (!dStr) return new Date(2026, 9, 1);
+  const parts = String(dStr).split(/[-/.]/);
+  if (parts.length >= 3) {
+    const d = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    let y = parseInt(parts[2], 10);
+    if (y < 100) y += 2000;
+    return new Date(y, m, d);
+  }
+  return new Date();
+}
+
+function getPaymentModeString(online, cash, receipt) {
+  const parts = [];
+  if (online > 0) parts.push(`<span class="mode-pill mode-online">${formatAmt(online)} <small>(ऑनलाइन)</small></span>`);
+  if (cash > 0) parts.push(`<span class="mode-pill mode-cash">${formatAmt(cash)} <small>(नकद)</small></span>`);
+  if (receipt > 0) parts.push(`<span class="mode-pill mode-receipt">${formatAmt(receipt)} <small>(रसीद)</small></span>`);
+  if (parts.length === 0) return '<span style="color:#94a3b8;">0/-</span>';
+  return parts.join(' <span style="color:#94a3b8;font-weight:normal;">+</span> ');
+}
+
+// Tab Switching
+function switchReportTab(tab) {
+  currentTab = tab;
+  document.getElementById('tabDonors').classList.toggle('active', tab === 'donors');
+  document.getElementById('tabIncomeExpense').classList.toggle('active', tab === 'income_expense');
+  renderCurrentReport();
+}
+
+// =========================================================================
+// FILE UPLOAD AND AUTO-PARSER
+// =========================================================================
+const dropzone = document.getElementById('dropzone');
+['dragenter', 'dragover'].forEach(name => {
+  dropzone.addEventListener(name, (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  }, false);
+});
+
+['dragleave', 'drop'].forEach(name => {
+  dropzone.addEventListener(name, (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+  }, false);
+});
+
+dropzone.addEventListener('drop', (e) => {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  if (files && files.length > 0) {
+    processUploadedFile(files[0]);
+  }
+});
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (file) {
+    processUploadedFile(file);
+  }
+}
+
+function processUploadedFile(file) {
+  document.getElementById('statusText').innerText = `फ़ाइल पढ़ी जा रही है: ${file.name}...`;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheetNames = workbook.SheetNames;
+
+      // Auto-detect workbook type
+      const isDonors = sheetNames.some(s => s.includes('दानदाता') || s.includes('वार्षिक') || s.includes('मासिक'));
+      const isIncomeExpense = sheetNames.some(s => s.includes('आय') || s.includes('व्यय') || s.includes('लेनदेन'));
+
+      if (isDonors) {
+        parseDonorsWorkbook(workbook);
+        switchReportTab('donors');
+        document.getElementById('statusText').innerText = `✅ दानदाता फ़ाइल सफलतापूर्वक लोड हुई: ${file.name}`;
+      } else if (isIncomeExpense) {
+        parseIncomeExpenseWorkbook(workbook);
+        switchReportTab('income_expense');
+        document.getElementById('statusText').innerText = `✅ आय-व्यय फ़ाइल सफलतापूर्वक लोड हुई: ${file.name}`;
+      } else {
+        // Fallback
+        parseDonorsWorkbook(workbook);
+        parseIncomeExpenseWorkbook(workbook);
+        document.getElementById('statusText').innerText = `फ़ाइल लोड हुई: ${file.name}`;
+        renderCurrentReport();
+      }
+    } catch (err) {
+      console.error(err);
+      alert('एक्सेल फ़ाइल पढ़ने में त्रुटि: ' + err.message);
+      document.getElementById('statusText').innerText = 'फ़ाइल पढ़ने में त्रुटि हुई';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// 1. Parse Donors Workbook
+function parseDonorsWorkbook(wb) {
+  const result = { yearly: [], monthly: [], newDonors: [] };
+
+  wb.SheetNames.forEach(sheetName => {
+    if (sheetName.includes('हटाया')) return;
+
+    const sheet = wb.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    if (!rows || rows.length < 2) return;
+
+    const headers = rows[0].map(h => String(h || '').trim());
+    const findCol = (kw) => headers.findIndex(h => h.includes(kw));
+    const colCode = findCol('प्रविष्टि');
+    const colName = headers.findIndex(h => h.includes('नाम') || h.includes('सदस्य'));
+    const colFather = findCol('पिता');
+    const colFixed = headers.findIndex(h => h.includes('नियत') || h.includes('संकल्प'));
+    const colRec = headers.findIndex(h => h.includes('प्राप्त') && h.includes('धनराशि'));
+    const colPaymentList = headers.findIndex(h => h.includes('भुगतान') || h.includes('सूची'));
+
+    if (sheetName.includes('वार्षिक')) {
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row || !row[colName]) continue;
+        const fixed = parseFloat(row[colFixed]) || 0;
+        const rec = parseFloat(row[colRec]) || 0;
+        let cash = 0, online = 0, receipt = 0;
+
+        if (colPaymentList >= 0 && row[colPaymentList]) {
+          try {
+            const list = JSON.parse(row[colPaymentList]);
+            if (Array.isArray(list)) {
+              list.forEach(p => {
+                const amt = parseFloat(p.rakam) || 0;
+                const m = String(p.madhyam || '').trim();
+                if (m === 'ऑनलाइन') online += amt;
+                else if (m === 'रसीद') receipt += amt;
+                else cash += amt;
+              });
+            }
+          } catch(e) {}
+        }
+        if (cash === 0 && online === 0 && receipt === 0 && rec > 0) cash = rec;
+
+        result.yearly.push({
+          code: row[colCode] || `वार्षिक-${r}`,
+          name: String(row[colName] || '').trim(),
+          father: colFather >= 0 ? String(row[colFather] || '').trim() : '',
+          fixed: fixed,
+          rec: rec,
+          cash: cash,
+          online: online,
+          receipt: receipt
+        });
+      }
+    } else if (sheetName.includes('मासिक')) {
+      const monthCols = [];
+      headers.forEach((h, idx) => {
+        if (h.includes('_राशि') || h.includes('_रकम')) {
+          const prefix = h.replace('_राशि', '').replace('_रकम', '');
+          const modeCol = headers.findIndex(mh => mh.includes('_माध्यम') && mh.replace('_माध्यम', '') === prefix);
+          monthCols.push({ amtIdx: idx, modeIdx: modeCol });
+        }
+      });
+
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row || !row[colName]) continue;
+        const fixed = parseFloat(row[colFixed]) || 0;
+        let cash = 0, online = 0, receipt = 0, rec = 0;
+
+        if (monthCols.length > 0) {
+          monthCols.forEach(m => {
+            const a = parseFloat(row[m.amtIdx]) || 0;
+            const mode = m.modeIdx >= 0 ? String(row[m.modeIdx] || '').trim() : 'नकद';
+            if (a > 0) {
+              rec += a;
+              if (mode === 'ऑनलाइन') online += a;
+              else if (mode === 'रसीद') receipt += a;
+              else cash += a;
+            }
+          });
+        }
+        if (rec === 0 && colRec >= 0) {
+          rec = parseFloat(row[colRec]) || 0;
+          cash = rec;
+        }
+
+        result.monthly.push({
+          code: row[colCode] || `मासिक-${r}`,
+          name: String(row[colName] || '').trim(),
+          father: colFather >= 0 ? String(row[colFather] || '').trim() : '',
+          fixed: fixed,
+          rec: rec,
+          cash: cash,
+          online: online,
+          receipt: receipt
+        });
+      }
+    } else if (sheetName.includes('नवीन')) {
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row || !row[colName]) continue;
+        const fixed = parseFloat(row[colFixed]) || 0;
+        const rec = parseFloat(row[colRec]) || 0;
+        let cash = 0, online = 0, receipt = 0;
+
+        if (colPaymentList >= 0 && row[colPaymentList]) {
+          try {
+            const list = JSON.parse(row[colPaymentList]);
+            if (Array.isArray(list)) {
+              list.forEach(p => {
+                const amt = parseFloat(p.rakam) || 0;
+                const m = String(p.madhyam || '').trim();
+                if (m === 'ऑनलाइन') online += amt;
+                else if (m === 'रसीद') receipt += amt;
+                else cash += amt;
+              });
+            }
+          } catch(e) {}
+        }
+        if (cash === 0 && online === 0 && receipt === 0 && rec > 0) cash = rec;
+
+        result.newDonors.push({
+          code: row[colCode] || `नवीन-${r}`,
+          name: String(row[colName] || '').trim(),
+          father: colFather >= 0 ? String(row[colFather] || '').trim() : '',
+          fixed: fixed,
+          rec: rec,
+          cash: cash,
+          online: online,
+          receipt: receipt
+        });
+      }
+    }
+  });
+
+  loadedDonorsData = result;
+  renderDonorsReport(result);
+}
+
+// 2. Parse Income & Expense Workbook
+function parseIncomeExpenseWorkbook(wb) {
+  const income = [];
+  const expense = [];
+
+  const txSheet = wb.Sheets['लेनदेन'] || wb.Sheets['Transactions'];
+  if (txSheet) {
+    const rows = XLSX.utils.sheet_to_json(txSheet);
+    rows.forEach(r => {
+      const type = String(r['प्रकार'] || r['Type'] || '').trim();
+      const item = {
+        code: r['प्रविष्टि क्रमांक'] || r['Code'] || '',
+        date: r['तारीख'] || r['Date'] || '',
+        amount: parseFloat(r['रकम'] || r['Amount']) || 0,
+        mode: String(r['भुगतान माध्यम'] || r['Mode'] || 'नकद').trim(),
+        desc: String(r['विवरण'] || r['Description'] || '').trim()
+      };
+      if (type.includes('आय') || type.toLowerCase() === 'income') {
+        income.push(item);
+      } else if (type.includes('व्यय') || type.toLowerCase() === 'expense') {
+        expense.push(item);
+      }
+    });
+  } else {
+    wb.SheetNames.forEach(sName => {
+      if (sName.includes('हटाया')) return;
+      const s = wb.Sheets[sName];
+      const rows = XLSX.utils.sheet_to_json(s);
+      if (sName.includes('आय')) {
+        rows.forEach(r => {
+          income.push({
+            code: r['प्रविष्टि क्रमांक'] || '',
+            date: r['तारीख'] || '',
+            amount: parseFloat(r['रकम']) || 0,
+            mode: String(r['भुगतान माध्यम'] || 'नकद').trim(),
+            desc: String(r['विवरण'] || '').trim()
+          });
+        });
+      } else if (sName.includes('व्यय')) {
+        rows.forEach(r => {
+          expense.push({
+            code: r['प्रविष्टि क्रमांक'] || '',
+            date: r['तारीख'] || '',
+            amount: parseFloat(r['रकम']) || 0,
+            mode: String(r['भुगतान माध्यम'] || 'नकद').trim(),
+            desc: String(r['विवरण'] || '').trim()
+          });
+        });
+      }
+    });
+  }
+
+  loadedIncomeExpenseData = { income, expense };
+  renderIncomeExpenseReport({ income, expense });
+}
+
+// =========================================================================
+// REPORT RENDERERS
+// =========================================================================
+function renderCurrentReport() {
+  if (currentTab === 'donors') {
+    if (!loadedDonorsData) {
+      document.getElementById('printableDoc').innerHTML = `
+        <div class="empty-state">
+          <div style="font-size: 48px; margin-bottom: 15px;">📁</div>
+          <div style="font-size: 16pt; font-weight: bold; margin-bottom: 8px;">कोई डेटा उपलब्ध नहीं है</div>
+          <div style="font-size: 11pt; color: #666;">दानदाता रिपोर्ट देखने व पीडीएफ डाउनलोड करने के लिए कृपया ऊपर दिए गए बॉक्स में "दानदाता प्रबंधन" एक्सेल फ़ाइल (.xlsx) अपलोड करें।</div>
+        </div>
+      `;
+      return;
+    }
+    renderDonorsReport(loadedDonorsData);
+  } else {
+    if (!loadedIncomeExpenseData) {
+      document.getElementById('printableDoc').innerHTML = `
+        <div class="empty-state">
+          <div style="font-size: 48px; margin-bottom: 15px;">📁</div>
+          <div style="font-size: 16pt; font-weight: bold; margin-bottom: 8px;">कोई डेटा उपलब्ध नहीं है</div>
+          <div style="font-size: 11pt; color: #666;">आय एवं व्यय रिपोर्ट देखने व पीडीएफ डाउनलोड करने के लिए कृपया ऊपर दिए गए बॉक्स में "आय एवं व्यय का विवरण" एक्सेल फ़ाइल (.xlsx) अपलोड करें।</div>
+        </div>
+      `;
+      return;
+    }
+    renderIncomeExpenseReport(loadedIncomeExpenseData);
+  }
+}
+
+function handlePrint() {
+  const hasData = (currentTab === 'donors' && loadedDonorsData) || 
+                  (currentTab === 'income_expense' && loadedIncomeExpenseData);
+  if (!hasData) {
+    alert('कृपया पहले एक्सेल फ़ाइल (.xlsx) अपलोड करें!');
+    return;
+  }
+  window.print();
+}
+
+// 1. RENDER DONORS REPORT (Modern Professional Structure)
+function renderDonorsReport(data) {
+  const yearly = data.yearly || [];
+  const monthly = data.monthly || [];
+  const newDonors = data.newDonors || [];
+  const totalDonorsCount = yearly.length + monthly.length + newDonors.length;
+
+  let grandFixed = 0, grandRec = 0;
+  let grandCash = 0, grandOnline = 0, grandReceipt = 0;
+
+  function buildCategoryHtml(list, title, isPending = false) {
+    if (list.length === 0) return '';
+    let subFixed = 0, subRec = 0;
+    let subCash = 0, subOnline = 0, subReceipt = 0;
+
+    let rowsHtml = '';
+    list.forEach((d, idx) => {
+      const fixed = d.fixed || 0;
+      const rec = d.rec || 0;
+      const rem = fixed - rec > 0 ? fixed - rec : 0;
+      subFixed += fixed;
+      subRec += rec;
+      subCash += (d.cash || 0);
+      subOnline += (d.online || 0);
+      subReceipt += (d.receipt || 0);
+
+      if (!isPending) {
+        grandFixed += fixed;
+        grandRec += rec;
+        grandCash += (d.cash || 0);
+        grandOnline += (d.online || 0);
+        grandReceipt += (d.receipt || 0);
+      }
+
+      const modeStr = getPaymentModeString(d.online || 0, d.cash || 0, d.receipt || 0);
+      const fatherStr = (d.father && d.father.trim()) ? d.father.trim() : '-';
+      const remDisplay = rem > 0 
+        ? `<span class="due-amount">${formatAmt(rem)}</span>` 
+        : '<span style="color:#94a3b8;">0/-</span>';
+
+      rowsHtml += `
+        <tr>
+          <td class="text-center font-bold" style="white-space: nowrap; width: 1%; color: #64748b;">${idx + 1}.</td>
+          <td class="text-left font-bold" style="width: auto;">${d.name}</td>
+          <td class="text-left" style="width: auto; color: #475569;">${fatherStr}</td>
+          <td class="text-right" style="white-space: nowrap; width: 1%;">${formatAmt(fixed)}</td>
+          <td class="text-right font-bold" style="white-space: nowrap; width: 1%;">${modeStr}</td>
+          <td class="text-right font-bold" style="white-space: nowrap; width: 1%;">${remDisplay}</td>
+        </tr>
+      `;
+    });
+
+    const showReceipt = title.includes('नवीन') || subReceipt > 0;
+    const modeDetailsHtml = showReceipt
+      ? `ऑनलाइन प्राप्त: <strong>${formatAmt(subOnline)}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; नकद प्राप्त: <strong>${formatAmt(subCash)}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; रसीद प्राप्त: <strong>${formatAmt(subReceipt)}</strong>`
+      : `ऑनलाइन प्राप्त: <strong>${formatAmt(subOnline)}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; नकद प्राप्त: <strong>${formatAmt(subCash)}</strong>`;
+
+    return `
+      <table class="ledger-table">
+        <thead>
+          <tr class="section-banner-row">
+            <td colspan="6">${title} (${list.length})</td>
+          </tr>
+          <tr>
+            <th class="text-center" style="white-space: nowrap; width: 1%;">क्र.सं.</th>
+            <th class="text-left" style="width: auto;">दानदाता का नाम</th>
+            <th class="text-left" style="width: auto;">पिता का नाम</th>
+            <th class="text-right" style="white-space: nowrap; width: 1%;">नियत धनराशि</th>
+            <th class="text-right" style="white-space: nowrap; width: 1%;">प्राप्त धनराशि (माध्यम)</th>
+            <th class="text-right" style="white-space: nowrap; width: 1%;">बकाया</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+          <tr class="subtotal-row">
+            <td colspan="3" class="text-right font-bold">${isPending ? 'उप-योग (बकाया) :' : `उप-योग (${title.replace(/ सूची.*/, '')}) :`}</td>
+            <td class="text-right font-bold" style="white-space: nowrap;">${formatAmt(subFixed)}</td>
+            <td class="text-right font-bold" style="white-space: nowrap;">${formatAmt(subRec)}</td>
+            <td class="text-right font-bold" style="white-space: nowrap;">${formatAmt(subFixed - subRec > 0 ? subFixed - subRec : 0)}</td>
+          </tr>
+          <tr class="subtotal-mode-row">
+            <td colspan="6" class="text-right">
+              ${modeDetailsHtml}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  }
+
+  // Pre-calculate to populate grand totals
+  const part1 = buildCategoryHtml(yearly, "वार्षिक दानदाता सूची");
+  const part2 = buildCategoryHtml(monthly, "मासिक दानदाता सूची");
+  const part3 = buildCategoryHtml(newDonors, "नवीन दानदाता सूची");
+
+  const grandRem = grandFixed - grandRec > 0 ? grandFixed - grandRec : 0;
+
+  // Pending donors list (those whose full or partial amount is unpaid)
+  const allDonors = [...yearly, ...monthly, ...newDonors];
+  const pendingDonors = allDonors.filter(d => ((d.fixed || 0) - (d.rec || 0)) > 0);
+  const partPending = pendingDonors.length > 0 
+    ? `
+      <div class="page-break-before html2pdf__page-break">
+        ${buildCategoryHtml(pendingDonors, "बकाया दानदाता सूची", true)}
+      </div>
+    `
+    : '';
+
+  const html = `
+    <div class="modern-doc-header">
+      <div class="modern-shree">॥ श्री गणेशाय नमः ॥</div>
+      <div class="modern-main-title">दानदाताओ का विवरण</div>
+    </div>
+
+    ${part1}
+    ${part2}
+    ${part3}
+
+    <!-- Modern Grand Summary Table Card -->
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <td colspan="2" class="summary-header-cell">समस्त दानदाता महायोग सारांश (वित्तीय स्थिति)</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="summary-metric-cell border-double-right" style="width: 50%;">
+            <div><strong>कुल दानदाता संख्या :</strong> ${totalDonorsCount} सदस्य</div>
+            <div style="margin-top: 6px;"><strong>कुल नियत / संकल्प धनराशि :</strong> ${formatAmt(grandFixed)}</div>
+          </td>
+          <td class="summary-metric-cell" style="width: 50%;">
+            <div><strong>कुल प्राप्त धनराशि :</strong> ${formatAmt(grandRec)}</div>
+            <div style="margin-top: 6px;"><strong>कुल बकाया धनराशि :</strong> <span class="due-amount">${formatAmt(grandRem)}</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="grand-balance-cell">
+            <div class="grand-balance-details">
+              नकद प्राप्त: ${formatAmt(grandCash)} &nbsp;&nbsp;|&nbsp;&nbsp; ऑनलाइन प्राप्त: ${formatAmt(grandOnline)} ${grandReceipt > 0 ? `&nbsp;&nbsp;|&nbsp;&nbsp; रसीद प्राप्त: ${formatAmt(grandReceipt)}` : ''}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    ${partPending}
+  `;
+
+  document.getElementById('printableDoc').innerHTML = html;
+}
+
+// 2. RENDER INCOME & EXPENSE REPORT (Modern 8-Column Comparative Structure)
+function renderIncomeExpenseReport(data) {
+  const income = data.income || [];
+  const expense = data.expense || [];
+
+  // Sort expenses by date
+  const sortedExpense = [...expense].sort((a, b) => parseDate(a.date) - parseDate(b.date));
+  const sortedIncome = [...income].sort((a, b) => parseDate(a.date) - parseDate(b.date));
+
+  // Build expense units with date headers (Date ONLY on expense side)
+  const expUnits = [];
+  let lastDate = null;
+  let expSr = 1;
+  sortedExpense.forEach(item => {
+    if (item.date !== lastDate) {
+      expUnits.push({ type: 'date', date: item.date });
+      lastDate = item.date;
+    }
+    expUnits.push({
+      type: 'item',
+      sr: expSr++,
+      desc: item.desc,
+      mode: item.mode,
+      amount: item.amount
+    });
+  });
+
+  // Income has NO date rows, only sequential items
+  const incUnits = [];
+  let incSr = 1;
+  sortedIncome.forEach(item => {
+    incUnits.push({
+      sr: incSr++,
+      desc: item.desc,
+      mode: item.mode,
+      amount: item.amount
+    });
+  });
+
+  // Calculate Totals
+  let incTotal = 0, incCash = 0, incOnline = 0;
+  income.forEach(i => {
+    incTotal += i.amount;
+    if (i.mode === 'नकद') incCash += i.amount;
+    else incOnline += i.amount;
+  });
+
+  let expTotal = 0, expCash = 0, expOnline = 0;
+  expense.forEach(e => {
+    expTotal += e.amount;
+    if (e.mode === 'नकद') expCash += e.amount;
+    else expOnline += e.amount;
+  });
+
+  const netBalance = incTotal - expTotal;
+  const netCash = incCash - expCash;
+  const netOnline = incOnline - expOnline;
+
+  const totalRows = Math.max(incUnits.length, expUnits.length);
+  let rowsHtml = '';
+
+  for (let i = 0; i < totalRows; i++) {
+    const inc = incUnits[i];
+    const exp = expUnits[i];
+
+    // Left 4 Cells (आय)
+    let leftHtml = '';
+    if (inc) {
+      const modePillClass = (inc.mode === 'ऑनलाइन') ? 'mode-online' : 'mode-cash';
+      const modeDisplay = `<span class="mode-pill ${modePillClass}">${inc.mode}</span>`;
+      leftHtml = `
+        <td class="text-center font-bold" style="white-space: nowrap; width: 1%; color: #64748b;">${inc.sr}.</td>
+        <td class="text-left" style="width: auto;">${inc.desc}</td>
+        <td class="text-center font-bold" style="white-space: nowrap; width: 1%;">${modeDisplay}</td>
+        <td class="text-right font-bold border-double-right" style="white-space: nowrap; width: 1%;">${formatAmt(inc.amount)}</td>
+      `;
+    } else {
+      leftHtml = `
+        <td style="white-space: nowrap; width: 1%;"></td>
+        <td style="width: auto;"></td>
+        <td style="white-space: nowrap; width: 1%;"></td>
+        <td class="border-double-right" style="white-space: nowrap; width: 1%;"></td>
+      `;
+    }
+
+    // Right 4 Cells (व्यय)
+    let rightHtml = '';
+    if (exp) {
+      if (exp.type === 'date') {
+        rightHtml = `
+          <td colspan="4" class="date-banner-row border-double-left">
+            दिनांक - ${exp.date}
+          </td>
+        `;
+      } else {
+        const modePillClass = (exp.mode === 'ऑनलाइन') ? 'mode-online' : 'mode-cash';
+        const modeDisplay = `<span class="mode-pill ${modePillClass}">${exp.mode}</span>`;
+        rightHtml = `
+          <td class="text-center font-bold border-double-left" style="white-space: nowrap; width: 1%; color: #64748b;">${exp.sr}.</td>
+          <td class="text-left" style="width: auto;">${exp.desc}</td>
+          <td class="text-center font-bold" style="white-space: nowrap; width: 1%;">${modeDisplay}</td>
+          <td class="text-right font-bold" style="white-space: nowrap; width: 1%;">${formatAmt(exp.amount)}</td>
+        `;
+      }
+    } else {
+      rightHtml = `
+        <td class="border-double-left" style="white-space: nowrap; width: 1%;"></td>
+        <td style="width: auto;"></td>
+        <td style="white-space: nowrap; width: 1%;"></td>
+        <td style="white-space: nowrap; width: 1%;"></td>
+      `;
+    }
+
+    rowsHtml += `<tr>${leftHtml}${rightHtml}</tr>`;
+  }
+
+  const html = `
+    <div class="modern-doc-header">
+      <div class="modern-shree">॥ श्री गणेशाय नमः ॥</div>
+      <div class="modern-main-title">आय एवं व्यय का विवरण</div>
+    </div>
+
+    <!-- 8 Column Comparative Table -->
+    <table class="ledger-table">
+      <thead>
+        <tr class="section-banner-row">
+          <td colspan="4" class="border-double-right font-bold text-center" style="width: 50%; font-size: 11pt; background: #0f766e !important;">आय</td>
+          <td colspan="4" class="border-double-left font-bold text-center" style="width: 50%; font-size: 11pt; background: #be123c !important;">व्यय</td>
+        </tr>
+        <tr>
+          <th class="text-center" style="white-space: nowrap; width: 1%;">क्र.सं.</th>
+          <th class="text-center" style="width: auto;">आय का विवरण</th>
+          <th class="text-center" style="white-space: nowrap; width: 1%;">माध्यम</th>
+          <th class="text-center border-double-right" style="white-space: nowrap; width: 1%;">धनराशि</th>
+
+          <th class="border-double-left text-center" style="white-space: nowrap; width: 1%;">क्र.सं.</th>
+          <th class="text-center" style="width: auto;">व्यय का विवरण</th>
+          <th class="text-center" style="white-space: nowrap; width: 1%;">माध्यम</th>
+          <th class="text-center" style="white-space: nowrap; width: 1%;">धनराशि</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml}
+        <!-- Inline Totals Row inside table -->
+        <tr class="subtotal-row">
+          <td colspan="3" class="text-right font-bold">आय योग :</td>
+          <td class="text-right font-bold border-double-right" style="white-space: nowrap; color: #047857;">${formatAmt(incTotal)}</td>
+
+          <td colspan="3" class="text-right font-bold border-double-left">व्यय योग :</td>
+          <td class="text-right font-bold" style="white-space: nowrap; color: #be123c;">${formatAmt(expTotal)}</td>
+        </tr>
+        <!-- Mode Breakdown Row under Totals Row -->
+        <tr class="subtotal-mode-row">
+          <td colspan="4" class="text-right border-double-right">
+            ऑनलाइन: <strong>${formatAmt(incOnline)}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; नकद: <strong>${formatAmt(incCash)}</strong>
+          </td>
+          <td colspan="4" class="text-right border-double-left">
+            ऑनलाइन: <strong>${formatAmt(expOnline)}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; नकद: <strong>${formatAmt(expCash)}</strong>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Ledger Net Balance Summary Card -->
+    <table class="summary-table">
+      <tbody>
+        <tr>
+          <td colspan="2" class="grand-balance-cell">
+            <div class="grand-balance-title">कुल शेष : ${formatAmt(netBalance)}</div>
+            <div class="grand-balance-details">
+              कुल ऑनलाइन शेष : ${formatAmt(netOnline)} &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; कुल नकद शेष : ${formatAmt(netCash)}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('printableDoc').innerHTML = html;
+}
+
+// =========================================================================
+// DIRECT CLIENT-SIDE PDF GENERATOR
+// =========================================================================
+function generatePdfDirect() {
+  const hasData = (currentTab === 'donors' && loadedDonorsData) || 
+                  (currentTab === 'income_expense' && loadedIncomeExpenseData);
+  if (!hasData) {
+    alert('कृपया पहले एक्सेल फ़ाइल (.xlsx) अपलोड करें!');
+    return;
+  }
+  const element = document.getElementById('printableDoc');
+  const filename = (currentTab === 'donors') 
+    ? 'दानदाताओ_का_विवरण.pdf' 
+    : 'आय_एवं_व्यय_का_विवरण.pdf';
+
+  document.getElementById('statusText').innerText = `⏳ पीडीएफ तैयार किया जा रहा है: ${filename}...`;
+
+  if (typeof html2pdf !== 'undefined') {
+    const opt = {
+      margin:       [8, 6, 8, 6],
+      filename:     filename,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, letterRendering: true, logging: false },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      document.getElementById('statusText').innerText = `✅ पीडीएफ सफलतापूर्वक डाउनलोड हो गया: ${filename}`;
+    }).catch(err => {
+      console.error(err);
+      alert('पीडीएफ बनाने में समस्या आई, अब प्रिंट डायलॉग खोला जा रहा है...');
+      window.print();
+    });
+  } else {
+    window.print();
+  }
+}
+
+// Initial Render
+window.addEventListener('DOMContentLoaded', () => {
+  renderCurrentReport();
+});
+</script>
+
+</body>
+</html>
